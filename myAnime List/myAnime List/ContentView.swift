@@ -8,30 +8,36 @@ struct ContentView: View {
     @State private var editAccountScene: Bool = false
     @State private var editInfoScene: Bool = false
     
-    @AppStorage("Accounts") var AccountData: Data = Data()
-    @AppStorage("Usernames") var UsernameData: Data = Data()
-    @AppStorage("Passwords") var PasswordData: Data = Data()
+    @AppStorage("Watched Anime") var DoneData: Data = Data()
+    @AppStorage("Watching Anime") var CurrentData: Data = Data()
+    @AppStorage("Want to Watch Anime") var WantData: Data = Data()
+    @AppStorage("New Season Release") var NewSeasonData: Data = Data()
     
-    @State private var Account: [String] = []
-    @State private var Username: [String] = []
-    @State private var Password: [String] = []
+    @State private var done: [String] = []
+    @State private var current: [String] = []
+    @State private var want: [String] = []
+    @State private var newSeason: [String] = []
     
-    @State private var accountSelect: String = ""
-    @State private var usernameSelect: String = ""
-    @State private var passwordSelect: String = ""
+    @State private var doneSelect: String = ""
+    @State private var currentSelect: String = ""
+    @State private var wantSelect: String = ""
+    @State private var newSeasonSelect: String = ""
     
     @State private var place: Int = 0
     
     
     init() {
-            if let savedAccounts = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Accounts") ?? Data()) {
-                _Account = State(initialValue: savedAccounts)
+            if let savedAccounts = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Watched Anime") ?? Data()) {
+                _done = State(initialValue: savedDone)
             }
-            if let savedUsernames = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Usernames") ?? Data()) {
-                _Username = State(initialValue: savedUsernames)
+            if let savedUsernames = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Watching Anime") ?? Data()) {
+                _current = State(initialValue: savedCurrent)
             }
-            if let savedPasswords = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Passwords") ?? Data()) {
-                _Password = State(initialValue: savedPasswords)
+            if let savedPasswords = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Want to Watch Anime") ?? Data()) {
+                _want = State(initialValue: savedWant)
+            }
+            if let savedPasswords = try?    JSONDecoder().decode([String].self, from:  UserDefaults.standard.data(forKey: "New Season Release") ?? Data()) {
+                _newSeason = State(initialValue: savedNewSeason)
             }
         }
     
@@ -52,7 +58,7 @@ struct ContentView: View {
                 } else if editInfoScene {
                     EditInfo(accounts: $Account, usernames: $Username, passwords: $Password, accountSelect: $accountSelect, usernameSelect: $usernameSelect, passwordSelect: $passwordSelect, place: $place, editInfoScene: $editInfoScene)
                 } else {
-                    Button("Add an Account") {
+                    Button("Add a Watched Anime") {
                         addAccountScene.toggle()
                         viewAccountScene = false
                         viewInfoScene = false
@@ -63,7 +69,7 @@ struct ContentView: View {
                     .border(Color.white, width: 1)
                     .foregroundColor(.white)
 
-                    Button("View your Accounts") {
+                    Button("Add a Want to Watch Anime") {
                         viewAccountScene.toggle()
                         addAccountScene = false
                         viewInfoScene = false
@@ -74,7 +80,7 @@ struct ContentView: View {
                     .border(Color.white, width: 1)
                     .foregroundColor(.white)
                     
-                    Button("Delete an Account") {
+                    Button("Add a Current Anime") {
                         deleteAccountScene.toggle()
                         addAccountScene = false
                         viewAccountScene = false
