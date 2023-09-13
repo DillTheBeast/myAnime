@@ -1,43 +1,39 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var addAccountScene: Bool = false
-    @State private var viewAccountScene: Bool = false
-    @State private var viewInfoScene: Bool = false
-    @State private var deleteAccountScene: Bool = false
-    @State private var editAccountScene: Bool = false
-    @State private var editInfoScene: Bool = false
+    @State private var watchedScene: Bool = false
+    @State private var wantScene: Bool = false
+    @State private var middleScene: Bool = false
+    @State private var addSelectScene: Bool = false
+    @State private var deleteSelectScene: Bool = false
+    @State private var addWatchedScene: Bool = false
+    @State private var addWantScene: Bool = false
+    @State private var addMiddleScene: Bool = false
     
-    @AppStorage("Watched Anime") var DoneData: Data = Data()
-    @AppStorage("Watching Anime") var CurrentData: Data = Data()
-    @AppStorage("Want to Watch Anime") var WantData: Data = Data()
-    @AppStorage("New Season Release") var NewSeasonData: Data = Data()
+    @AppStorage("Watched") var WatchedData: Data = Data()
+    @AppStorage("Want") var WantData: Data = Data()
+    @AppStorage("Middle") var MiddleData: Data = Data()
     
-    @State private var done: [String] = []
-    @State private var current: [String] = []
-    @State private var want: [String] = []
-    @State private var newSeason: [String] = []
+    @State private var Watched: [String] = []
+    @State private var Want: [String] = []
+    @State private var Middle: [String] = []
     
-    @State private var doneSelect: String = ""
-    @State private var currentSelect: String = ""
-    @State private var wantSelect: String = ""
-    @State private var newSeasonSelect: String = ""
+    @State private var WatchedSelect: String = ""
+    @State private var WantSelect: String = ""
+    @State private var MiddleSelect: String = ""
     
     @State private var place: Int = 0
     
     
     init() {
-            if let savedAccounts = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Watched Anime") ?? Data()) {
-                _done = State(initialValue: savedDone)
+            if let WatchedSelect = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Watched") ?? Data()) {
+                _Watched = State(initialValue: WatchedSelect)
             }
-            if let savedUsernames = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Watching Anime") ?? Data()) {
-                _current = State(initialValue: savedCurrent)
+            if let WantSelect = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Want") ?? Data()) {
+                _Want = State(initialValue: WantSelect)
             }
-            if let savedPasswords = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Want to Watch Anime") ?? Data()) {
-                _want = State(initialValue: savedWant)
-            }
-            if let savedPasswords = try?    JSONDecoder().decode([String].self, from:  UserDefaults.standard.data(forKey: "New Season Release") ?? Data()) {
-                _newSeason = State(initialValue: savedNewSeason)
+            if let MiddleSelect = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Middle") ?? Data()) {
+                _Middle = State(initialValue: MiddleSelect)
             }
         }
     
@@ -58,7 +54,7 @@ struct ContentView: View {
                 } else if editInfoScene {
                     EditInfo(accounts: $Account, usernames: $Username, passwords: $Password, accountSelect: $accountSelect, usernameSelect: $usernameSelect, passwordSelect: $passwordSelect, place: $place, editInfoScene: $editInfoScene)
                 } else {
-                    Button("Add a Watched Anime") {
+                    Button("Add an Anime") {
                         addAccountScene.toggle()
                         viewAccountScene = false
                         viewInfoScene = false
@@ -69,7 +65,7 @@ struct ContentView: View {
                     .border(Color.white, width: 1)
                     .foregroundColor(.white)
 
-                    Button("Add a Want to Watch Anime") {
+                    Button("View your watched Anime") {
                         viewAccountScene.toggle()
                         addAccountScene = false
                         viewInfoScene = false
@@ -80,22 +76,35 @@ struct ContentView: View {
                     .border(Color.white, width: 1)
                     .foregroundColor(.white)
                     
-                    Button("Add a Current Anime") {
-                        deleteAccountScene.toggle()
+                    Button("View your want to watch Anime") {
+                        viewAccountScene.toggle()
                         addAccountScene = false
-                        viewAccountScene = false
                         viewInfoScene = false
+                        deleteAccountScene = false
                         editAccountScene = false
                     }
                     .padding()
                     .border(Color.white, width: 1)
                     .foregroundColor(.white)
                     
-                    Button("Edit an Account") {
-                        editAccountScene.toggle()
+                    Button("View your middle of watching Anime") {
+                        viewAccountScene.toggle()
+                        addAccountScene = false
+                        viewInfoScene = false
+                        deleteAccountScene = false
+                        editAccountScene = false
+                    }
+                    .padding()
+                    .border(Color.white, width: 1)
+                    .foregroundColor(.white)
+                    
+                    
+                    Button("Delete an Anime") {
+                        deleteAccountScene.toggle()
                         addAccountScene = false
                         viewAccountScene = false
                         viewInfoScene = false
+                        editAccountScene = false
                     }
                     .padding()
                     .border(Color.white, width: 1)
@@ -483,3 +492,4 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
