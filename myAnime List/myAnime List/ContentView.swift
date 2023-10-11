@@ -17,15 +17,20 @@ struct ContentView: View {
     @AppStorage("Watched") var WatchedData: Data = Data()
     @AppStorage("Want") var WantData: Data = Data()
     @AppStorage("Middle") var MiddleData: Data = Data()
+    @AppStorage("Release") var releaseData: Data = Data()
+    @AppStorage("Seasons") var seasonsData: Data = Data()
     
     @State private var newRelease: [String] = []
-    @State private var seasons: [String] = []
+    @State private var Seasons: [String] = []
     @State private var Watched: [String] = []
     @State private var Want: [String] = []
     @State private var Middle: [String] = []
     
     @State private var WatchedSelect: String = ""
+    @State private var WantSelect: String = ""
     @State private var MiddleSelect: String = ""
+    @State private var releaseSelect: String = ""
+    @State private var seasonsSelect: String = ""
     
     @State private var place: Int = 0
     
@@ -39,6 +44,12 @@ struct ContentView: View {
             if let savedMiddle = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Middle") ?? Data()) {
                 _Middle = State(initialValue: savedMiddle)
             }
+            if let savedRelease = try? JSONDecoder().decode([String].self, from:     UserDefaults.standard.data(forKey: "Release") ?? Data()) {
+                _newRelease = State(initialValue: savedRelease)
+            }
+            if let savedSeasons = try? JSONDecoder().decode([String].self, from: UserDefaults.standard.data(forKey: "Seasons") ?? Data()) {
+                _Seasons = State(initialValue: savedSeasons)
+            }
         }
     
     var body: some View {
@@ -46,9 +57,9 @@ struct ContentView: View {
             Color.black.edgesIgnoringSafeArea(.all)
             VStack(spacing: 20) {
                 if watchedScene {
-                    watched(watchedScene: $watchedScene, releaseScene: $releaseScene, watched: $Watched, watchedSelect: $WatchedSelect)
+                    watched(watchedScene: $watchedScene, releaseScene: $releaseScene, watched: $Watched, release: $newRelease, watchedSelect: $WatchedSelect, releaseSelect: $releaseSelect)
                 } else if middleScene {
-                    middle(middleScene: $middleScene, seasonsScene: $seasonsScene, middle: $Middle, middleSelect: $MiddleSelect)
+                    middle(middleScene: $middleScene, seasonsScene: $seasonsScene, middle: $Middle, seasons: $Seasons, middleSelect: $MiddleSelect, seasonsSelect: $seasonsSelect)
                 } else if wantScene {
                     want(wantScene: $wantScene, want: $Want)
                 } else if addWatchedScene {
@@ -56,8 +67,18 @@ struct ContentView: View {
                 } else if addWantScene {
                     addWant(addWantScene: $addWantScene, want: $Want)
                 } else if addMiddleScene {
-                    addMiddle(addMiddleScene: $addMiddleScene, middle: $Middle, seasons: $seasons)
-                } else {
+                    addMiddle(addMiddleScene: $addMiddleScene, middle: $Middle, seasons: $Seasons)
+                } else if releaseScene {
+                    release(releaseScene: $releaseScene, watchedSelect: $WatchedSelect, releaseSelect: $releaseSelect)
+                } else if seasonsScene {
+                    seasons(seasonsScene: $seasonsScene, middleSelect: $MiddleSelect, seasonsSelect: $seasonsSelect)
+                } else if deleteWatchedScene {
+                    deleteWatched(deleteWatchedScene: $deleteWatchedScene, watched: $Watched, release: $newRelease)
+                } else if deleteWantScene {
+                    deleteWant(deleteWantScene: $deleteWantScene, want: $Want)
+                } else if deleteMiddleScene {
+                    deleteMiddle(deleteMiddleScene: $deleteMiddleScene, middle: $Middle, seasons: $Seasons)
+                }else {
                     Button("View an Anime you have Watched") {
                         resetScenes()
                         watchedScene = true
@@ -147,8 +168,10 @@ struct watched: View {
     @Binding var watchedScene: Bool
     @Binding var releaseScene: Bool
     @Binding var watched: [String]
+    @Binding var release: [String]
     
     @Binding var watchedSelect: String
+    @Binding var releaseSelect: String
     
     var body: some View {
         VStack() {
@@ -157,6 +180,7 @@ struct watched: View {
             List(watched.indices, id: \.self) { index in
                 Button(action: {
                     watchedSelect = watched[index]
+                    releaseSelect = release[index]
                     releaseScene = true  // Toggle to show the ViewInfo scene
                     watchedScene = false  // Close the ViewAccount scene
                 }) {
@@ -224,8 +248,10 @@ struct middle: View {
     @Binding var middleScene: Bool
     @Binding var seasonsScene: Bool
     @Binding var middle: [String]
+    @Binding var seasons: [String]
     
     @Binding var middleSelect: String
+    @Binding var seasonsSelect: String
     
     var body: some View {
         VStack() {
@@ -234,6 +260,7 @@ struct middle: View {
             List(middle.indices, id: \.self) { index in
                 Button(action: {
                     middleSelect = middle[index]
+                    seasonsSelect = seasons[index]
                     seasonsScene = true  // Toggle to show the ViewInfo scene
                     middleScene = false  // Close the ViewAccount scene
                 }) {
@@ -495,6 +522,165 @@ struct addMiddle: View {
             .cornerRadius(20)
             .shadow(radius: 20)
         }
+    }
+}
+
+struct seasons: View {
+    @Binding var seasonsScene: Bool
+    @Binding var middleSelect: String
+    @Binding var seasonsSelect: String
+    
+    var body: some View {
+        VStack() {
+            Text("Show you are Watching: \(middleSelect)")
+                .foregroundColor(.white)  // set the text color to white
+                .frame(maxWidth: .infinity, minHeight: 44)  // taking the full width and a minimum height
+                .border(Color.black)
+                .background(Color.black)  // set the row background to black
+                .font(.title)
+            Text("Amount of Seasons: \(seasonsSelect)")
+                .foregroundColor(.white)  // set the text color to white
+                .frame(maxWidth: .infinity, minHeight: 44)  // taking the full width and a minimum height
+                .border(Color.black)
+                .background(Color.black)  // set the row background to black
+                .font(.title)
+            
+            Button("Go Back") {
+                seasonsScene.toggle()
+            }
+            .padding()
+            .background(Color.red)
+            .foregroundColor(.white)
+            .cornerRadius(8)
+        }
+    }
+}
+
+struct release: View {
+    @Binding var releaseScene: Bool
+    @Binding var watchedSelect: String
+    @Binding var releaseSelect: String
+    
+    var body: some View {
+        VStack() {
+            Text("Watched Show: \(watchedSelect)")
+                .foregroundColor(.white)  // set the text color to white
+                .frame(maxWidth: .infinity, minHeight: 44)  // taking the full width and a minimum height
+                .border(Color.black)
+                .background(Color.black)  // set the row background to black
+                .font(.title)
+            Text("Next Episode Release: \(releaseSelect)")
+                .foregroundColor(.white)  // set the text color to white
+                .frame(maxWidth: .infinity, minHeight: 44)  // taking the full width and a minimum height
+                .border(Color.black)
+                .background(Color.black)  // set the row background to black
+                .font(.title)
+            
+            Button("Go Back") {
+                releaseScene.toggle()
+            }
+            .padding()
+            .background(Color.red)
+            .foregroundColor(.white)
+            .cornerRadius(8)
+        }
+    }
+}
+
+struct deleteWatched: View {
+    @Binding var deleteWatchedScene: Bool
+    @Binding var watched: [String]
+    @Binding var release: [String]
+    
+    var body: some View {
+        VStack() {
+            List(watched.indices, id: \.self) { index in
+                Button(action: {
+                    watched.remove(at: index)
+                    release.remove(at: index)
+                    deleteWatchedScene.toggle()
+                }) {
+                    Text(watched[index])
+                        .foregroundColor(.white)  // set the text color to white
+                        .frame(maxWidth: .infinity, minHeight: 44)  // taking the full width and a minimum height
+                        .border(Color.black)
+                        .background(Color.black)  // set the row background to black
+                }
+            }
+            Button("Go Back") {
+                deleteWatchedScene.toggle()
+            }
+            .padding()
+            .background(Color.red)
+            .foregroundColor(.white)
+            .cornerRadius(8)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)  // Make the VStack occupy the entire space
+        .background(Color.black)
+    }
+}
+
+struct deleteWant: View {
+    @Binding var deleteWantScene: Bool
+    @Binding var want: [String]
+    
+    var body: some View {
+        VStack() {
+            List(want.indices, id: \.self) { index in
+                Button(action: {
+                    want.remove(at: index)
+                    deleteWantScene.toggle()
+                }) {
+                    Text(want[index])
+                        .foregroundColor(.white)  // set the text color to white
+                        .frame(maxWidth: .infinity, minHeight: 44)  // taking the full width and a minimum height
+                        .border(Color.black)
+                        .background(Color.black)  // set the row background to black
+                }
+            }
+            Button("Go Back") {
+                deleteWantScene.toggle()
+            }
+            .padding()
+            .background(Color.red)
+            .foregroundColor(.white)
+            .cornerRadius(8)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)  // Make the VStack occupy the entire space
+        .background(Color.black)
+    }
+}
+
+struct deleteMiddle: View {
+    @Binding var deleteMiddleScene: Bool
+    @Binding var middle: [String]
+    @Binding var seasons: [String]
+    
+    var body: some View {
+        VStack() {
+            List(middle.indices, id: \.self) { index in
+                Button(action: {
+                    middle.remove(at: index)
+                    seasons.remove(at: index)
+                    deleteMiddleScene.toggle()
+                }) {
+                    Text(middle[index])
+                        .foregroundColor(.white)  // set the text color to white
+                        .frame(maxWidth: .infinity, minHeight: 44)  // taking the full width and a minimum height
+                        .border(Color.black)
+                        .background(Color.black)  // set the row background to black
+                }
+            }
+            Button("Go Back") {
+                deleteMiddleScene.toggle()
+            }
+            .padding()
+            .background(Color.red)
+            .foregroundColor(.white)
+            .cornerRadius(8)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)  // Make the VStack occupy the entire space
+        .background(Color.black)
     }
 }
 
